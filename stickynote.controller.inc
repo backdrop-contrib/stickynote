@@ -10,7 +10,7 @@ class StickynoteController extends DrupalDefaultEntityController {
     try {
       drupal_write_record('stickynote', $stickynote);
       field_attach_insert('stickynote', $stickynote);
-      module_invoke_all('entity_insert', 'stickynote', $stickynote);
+      module_invoke_all('entity_insert', $stickynote, 'stickynote');
       return $stickynote;
     }
     catch (Exception $e) {
@@ -44,7 +44,7 @@ class StickynoteController extends DrupalDefaultEntityController {
         ->condition('snid', $stickynote->snid)
         ->execute();
       field_attach_delete('stickynote', $stickynote);
-      module_invoke_all('entity_delete', 'stickynote', $stickynote);
+      module_invoke_all('entity_delete', $stickynote, 'stickynote');
     }
     catch (Exception $e) {
       watchdog_exception('stickynote', $e);
