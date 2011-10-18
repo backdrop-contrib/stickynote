@@ -140,6 +140,8 @@ function stickynote_add_form($form, &$form_state, $stickynote) {
     '#suffix' => '</div>',
     '#markup' => stickynote_notes_table($referring_url),
   );
+  // @TODO: Remove the add note fields if user does not have access to creating
+  // notes
   $form['note'] = array(
     '#type' => 'textarea',
     '#title' => t('Add Note'),
@@ -155,8 +157,8 @@ function stickynote_add_form($form, &$form_state, $stickynote) {
     ),
     '#value' => t('Add Note'),
   );
-  $form_state['referring_url'] = $referring_url;
 
+  $form_state['referring_url'] = $referring_url;
   field_attach_form('stickynote', $stickynote, $form, $form_state);
 
   return $form;
