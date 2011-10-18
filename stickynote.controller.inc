@@ -29,7 +29,7 @@ class StickynoteController extends DrupalDefaultEntityController {
         ->condition('snid', $stickynote->snid)
         ->execute();
       field_attach_update('stickynote', $stickynote);
-      module_invoke_all('entity_update', 'stickynote', $stickynote);
+      module_invoke_all('entity_update', $stickynote, 'stickynote');
       return $stickynote;
     }
     catch (Exception $e) {
