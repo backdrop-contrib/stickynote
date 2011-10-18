@@ -12,7 +12,7 @@ function stickynote_menu() {
     'title' => 'Stickynote',
     'description' => 'Manage stickynote structure',
     'page callback' => 'stickynote_info',
-    'access arguments' => array('administer stickynotes'),
+    'access arguments' => array('administer stickynote'),
     'file' => 'includes/stickynote.admin.inc',
   );
   $items['stickynote/%stickynote'] = array(
@@ -26,21 +26,21 @@ function stickynote_menu() {
   $items['stickynote/add'] = array(
     'title' => 'Add Stickynote',
     'page callback' => 'stickynote_add_page',
-    'access arguments' => array('create stickynote'),
+    'access arguments' => array('create stickynotes'),
     'type' => MENU_CALLBACK,
   );
   $items['stickynote/%stickynote/delete'] = array(
     'title' => 'Delete Stickynote',
     'page callback' => 'stickynote_delete',
     'page arguments' => array(1),
-    'access arguments' => array('delete stickynote'),
+    'access arguments' => array('delete stickynotes'),
     'type' => MENU_CALLBACK,
   );
   $items['stickynote/%stickynote/edit'] = array(
     'title' => 'Edit Stickynote',
     'page callback' => 'stickynote_edit',
     'page arguments' => array(1),
-    'access arguments' => array('edit stickynote'),
+    'access arguments' => array('edit stickynotes'),
     'type' => MENU_CALLBACK,
   );
   return $items;
@@ -69,7 +69,7 @@ function stickynote_entity_info() {
         'label' => 'Stickynote',
         'admin' => array(
           'path' => 'admin/structure/stickynote/manage',
-          'access arguments' => array('administer stickynotes'),
+          'access arguments' => array('administer stickynote'),
         ),
       ),
     ),
@@ -94,18 +94,28 @@ function stickynote_uri($stickynote) {
   );
 }
 
+/**
+ * Loads a stickynode object based on the snid
+ *
+ * @param mixed $snid An integer or an array of integers matching snids.
+ * @param boolean $reset
+ * @return object
+ */
 function stickynote_load($snid = NULL, $reset = FALSE) {
   $snids = (isset($snid) ? array($snid) : array());
   $stickynote = stickynote_load_multiple($snids, $reset);
   return $stickynote ? reset($stickynote) : FALSE;
 }
 
+/**
+ * Helper function. Loads multiple stickynotes.
+ */
 function stickynote_load_multiple($snids = array(), $conditions = array(), $reset = FALSE) {
   return entity_load('stickynote', $snids, $conditions, $reset);
 }
 
 /**
- * Stickynote add page
+ * Stickynote add page callback function.
  */
 function stickynote_add_page() {
   $stickynote = (object)array (
@@ -130,6 +140,8 @@ function stickynote_add_form($form, &$form_state, $stickynote) {
     '#suffix' => '</div>',
     '#markup' => stickynote_notes_table($referring_url),
   );
+  // @TODO: Remove the add note fields if user does not have access to creating
+  // notes
   $form['note'] = array(
     '#type' => 'textarea',
     '#title' => t('Add Note'),
@@ -145,8 +157,8 @@ function stickynote_add_form($form, &$form_state, $stickynote) {
     ),
     '#value' => t('Add Note'),
   );
-  $form_state['referring_url'] = $referring_url;
 
+  $form_state['referring_url'] = $referring_url;
   field_attach_form('stickynote', $stickynote, $form, $form_state);
 
   return $form;
@@ -253,18 +265,22 @@ function stickynote_edit($stickynote) {
  */
 function stickynote_permission() {
     return array(
-    'administer stickynotes' =>  array(
+    'administer stickynote' =>  array(
       'title' => t('Administer Stickynote'),
       'restrict access' => TRUE,
     ),
     'view stickynotes' => array(
-      'title' => t('View Stickynote'),
+      'title' => t('View stickynotes'),
+      'restrict access' => TRUE,
     ),
-    'create stickynote' => array(
-      'title' => t('Create Stickynote')
+    'create stickynotes' => array(
+      'title' => t('Create stickynotes')
     ),
-    'edit stickynote' => array(
-      'title' => t('Edit Stickynote')
+    'edit stickynotes' => array(
+      'title' => t('Edit stickynotes')
+    ),
+    'delete stickynotes' => array(
+      'title' => t('Delete stickynotes')
     ),
   );
 }
@@ -315,9 +331,9 @@ function stickynote_edit_form_submit($form, &$form_state) {
   $stickynote = entity_get_controller('stickynote')->update($stickynote_submission);
 }
 
-
 /**
  * Stickynote title callback
+ * 
  * @param $stickynote
  */
 function stickynote_page_title($stickynote) {
@@ -326,6 +342,7 @@ function stickynote_page_title($stickynote) {
 
 /**
  * Builds stickynote page
+ * 
  * @param $stickynote
  * @param $view_mode
  */
@@ -408,9 +425,11 @@ function stickynote_block_view($delta = '') {
   $block = array();
   switch ($delta) {
     case 'stickynote_block':
-      module_load_include('inc', 'stickynote', 'includes/stickynote.block');
-      $block['subject'] = t('Stickynotes');
-      $block['content'] = stickynote_block_contents();
+      if (user_access('view stickynotes')) {
+        module_load_include('inc', 'stickynote', 'includes/stickynote.block');
+        $block['subject'] = t('Stickynotes');
+        $block['content'] = stickynote_block_contents();
+      }
       break;
   }
   return $block;
@@ -423,7 +442,9 @@ function stickynote_block_view($delta = '') {
  * @param $referring_url
  */
 function stickynote_notes_table($referring_url = NULL) {
-  // use current path if there is no reffering url
+  $can_edit = user_access('edit stickynotes');
+  $can_delete = user_access('delete stickynotes');
+  // Use current path if there is no reffering url
   if (isset($referring_url)) {
     $path = $referring_url;
   }
@@ -431,7 +452,7 @@ function stickynote_notes_table($referring_url = NULL) {
     $path = current_path();
   }
 
-  // get all stickynotes of path and order by created date
+  // Get all stickynotes of path and order by created date
   $query = db_select('stickynote', 's')
     ->condition('url', $path)
     ->fields('s')
@@ -441,7 +462,7 @@ function stickynote_notes_table($referring_url = NULL) {
 
   // build rows for table
   foreach ($result as $key => $row) {
-    $notes[] = array(
+    $notes[$row->snid] = array(
       'data' => array(
         'note' => $row->note,
         'edit' => l(t('edit'), 'stickynote/' . $row->snid . '/edit', array('attributes' => array('class' => array('use-ajax')))),
@@ -449,13 +470,29 @@ function stickynote_notes_table($referring_url = NULL) {
         'created' => date('n/j - G:i', $row->created),
       )
     );
+    if (!$can_edit) {
+      unset($notes[$row->snid]['data']['edit']);
+    }
+    if (!$can_delete) {
+      unset($notes[$row->snid]['data']['delete']);
+    }
   }
 
   $output = '';
 
+  $header = array();
+  $header[] = t('Note');
+  if ($can_edit) {
+    $header[] = t('Edit');
+  }
+  if ($can_delete) {
+    $header[] = t('Delete');
+  }
+  $header[] = t('Date');
+  
   if (isset($notes)) {
+    $table['header'] = $header;
     $table['rows'] = $notes;
-    $table['header'] = array('Note', 'Edit', 'Delete', 'Time');
 
     $output = theme('table', $table);
   }

@@ -1,4 +1,3 @@
-
 /**
  *  @file
  *  README for the Stickynote Module.
@@ -8,7 +7,6 @@ This module simply creates a block with the ability to add, delete, and edit not
 Notes are stored on a per page basis can be made visible to certain roles like any
 other block. All of the notes, sitewide, can be viewed from the Manage page at 
 admin/structure/stickynote/manage.
-
 
 How to:
 Enabling this module will create a block that can be placed in a region on your site. 
