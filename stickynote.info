@@ -1,4 +1,3 @@
-; $ID: $
 name = Sticky Note
 description = "Adds ability to add sticky notes"
 core = 7.x

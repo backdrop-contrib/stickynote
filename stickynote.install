@@ -61,12 +61,14 @@ function stickynote_schema() {
  * Implements hook_install().
  */
 function stickynote_install() {
-  $role = user_role_load_by_name('administrator');
-  db_insert('block_role')
-    ->fields(array(
-      'module' => 'stickynote',
-      'delta' => 'stickynote_block',
-      'rid' => $role->rid,
-    ))
-    ->execute();  
+  $role = user_role_load_by_name(st('administrator'));
+  if ($role != FALSE) {
+    db_insert('block_role')
+      ->fields(array(
+        'module' => 'stickynote',
+        'delta' => 'stickynote_block',
+        'rid' => $role->rid,
+      ))
+      ->execute();
+  }
 }

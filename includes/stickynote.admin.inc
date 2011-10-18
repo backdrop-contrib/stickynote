@@ -1,10 +1,14 @@
 <?php
-
 /**
  * @file
  * Defines the admin page for the stickynote module
  */
 
+/**
+ * Admin page callback function.
+ * 
+ * @return string 
+ */
 function stickynote_info() {
   $notes_per_page = 20;
   $header = array(
