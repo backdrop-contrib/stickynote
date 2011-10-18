@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Install, update and uninstall functions for the stickynote module.
@@ -55,20 +54,4 @@ function stickynote_schema() {
   );
 
   return $schema;
-}
-
-/**
- * Implements hook_install().
- */
-function stickynote_install() {
-  $role = user_role_load_by_name(st('administrator'));
-  if ($role != FALSE) {
-    db_insert('block_role')
-      ->fields(array(
-        'module' => 'stickynote',
-        'delta' => 'stickynote_block',
-        'rid' => $role->rid,
-      ))
-      ->execute();
-  }
 }
