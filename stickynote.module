@@ -464,7 +464,7 @@ function stickynote_notes_table($referring_url = NULL) {
   foreach ($result as $key => $row) {
     $notes[$row->snid] = array(
       'data' => array(
-        'note' => $row->note,
+        'note' => nl2br($row->note),
         'edit' => l(t('edit'), 'stickynote/' . $row->snid . '/edit', array('attributes' => array('class' => array('use-ajax')))),
         'delete' => l(t('delete'), 'stickynote/' . $row->snid . '/delete', array('attributes' => array('class' => array('use-ajax')))),
         'created' => format_date($row->created, 'short'), 
