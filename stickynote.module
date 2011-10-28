@@ -46,6 +46,17 @@ function stickynote_menu() {
   return $items;
 }
 
+/**
+ * Implements hook_theme().
+ */
+function stickynote_theme($existing, $type, $theme, $path) {
+  return array (
+    'stickynote_list' => array(
+      'variables' => array('referring_url' => NULL),
+     ),
+  );
+}
+
 
 
 /**
@@ -134,11 +145,11 @@ function stickynote_add_page() {
  */
 function stickynote_add_form($form, &$form_state, $stickynote) {
   $referring_url = !empty($stickynote->url) ? $stickynote->url : current_path();
-  $form['notes_table'] = array(
+  $form['notes_list'] = array(
     '#type' => 'markup',
-    '#prefix' => '<div id="notes_table">',
+    '#prefix' => '<div id="notes-list">',
     '#suffix' => '</div>',
-    '#markup' => stickynote_notes_table($referring_url),
+    '#markup' => theme('stickynote_list', array('referring_url' => $referring_url)),
   );
   // @TODO: Remove the add note fields if user does not have access to creating
   // notes
@@ -152,7 +163,7 @@ function stickynote_add_form($form, &$form_state, $stickynote) {
     '#type' => 'submit',
     '#ajax' => array(
       'callback' => 'submit_note_add_callback',
-      'wrapper' => 'notes_table',
+      'wrapper' => 'notes-list',
       'name' => 'submit1',
     ),
     '#value' => t('Add Note'),
@@ -168,11 +179,11 @@ function stickynote_add_form($form, &$form_state, $stickynote) {
  * Implements hook_form().
  */
 function stickynote_edit_form($form, &$form_state, $stickynote) {
-  $form['notes_table'] = array(
+  $form['notes_list'] = array(
     '#type' => 'markup',
-    '#prefix' => '<div id="notes_table">',
+    '#prefix' => '<div id="notes-list">',
     '#suffix' => '</div>',
-    '#markup' => stickynote_notes_table($stickynote->url),
+    '#markup' => theme('stickynote_list', array('referring_url' => $stickynote->url)),
   );
   $form['note'] = array(
     '#type' => 'textarea',
@@ -204,9 +215,9 @@ function stickynote_edit_form($form, &$form_state, $stickynote) {
  * Add submit callback
  */
 function submit_note_add_callback($form, $form_state) {
-  // update table with new data
-  $element = $form['notes_table'];
-  $element['#markup'] = stickynote_notes_table($form_state['referring_url']);
+  // update list with new data
+  $element = $form['notes_list'];
+  $element['#markup'] = theme('stickynote_list', array('referring_url' => $form_state['referring_url']));
   return $element;
 }
 
@@ -437,14 +448,18 @@ function stickynote_block_view($delta = '') {
 
 /**
  * Get notes for referring_url/current url and
- * return as table including edit/delete etc...
+ * return as list including edit/delete etc...
  *
- * @param $referring_url
+ * @param $variables -> contains $variables['referring_url']
+ * 
+ * @TODO: remove as much logic as possible out of theme function
+ *        there should not be any db calls in theme function
  */
-function stickynote_notes_table($referring_url = NULL) {
+function theme_stickynote_list($variables) {
+  $referring_url = $variables['referring_url'];
   $can_edit = user_access('edit stickynotes');
   $can_delete = user_access('delete stickynotes');
-  // Use current path if there is no reffering url
+// Use current path if there is no reffering url
   if (isset($referring_url)) {
     $path = $referring_url;
   }
@@ -452,22 +467,22 @@ function stickynote_notes_table($referring_url = NULL) {
     $path = current_path();
   }
 
-  // Get all stickynotes of path and order by created date
+// Get all stickynotes of path and order by created date
   $query = db_select('stickynote', 's')
-    ->condition('url', $path)
-    ->fields('s')
-    ->orderBy('created', 'DESC');
+          ->condition('url', $path)
+          ->fields('s')
+          ->orderBy('created', 'DESC');
 
   $result = $query->execute();
 
-  // build rows for table
+// build rows for list
   foreach ($result as $key => $row) {
     $notes[$row->snid] = array(
       'data' => array(
         'note' => nl2br($row->note),
-        'edit' => l(t('edit'), 'stickynote/' . $row->snid . '/edit', array('attributes' => array('class' => array('use-ajax')))),
-        'delete' => l(t('delete'), 'stickynote/' . $row->snid . '/delete', array('attributes' => array('class' => array('use-ajax')))),
-        'created' => format_date($row->created, 'short'), 
+        'edit' => l(t('edit this note'), 'stickynote/' . $row->snid . '/edit', array('attributes' => array('class' => array('use-ajax')))),
+        'delete' => l(t('delete this note'), 'stickynote/' . $row->snid . '/delete', array('attributes' => array('class' => array('use-ajax')))),
+        'created' => format_date($row->created, 'short'),
       )
     );
     if (!$can_edit) {
@@ -489,7 +504,7 @@ function stickynote_notes_table($referring_url = NULL) {
     $header[] = t('Delete');
   }
   $header[] = t('Date');
-  
+
   if (isset($notes)) {
     $table['header'] = $header;
     $table['rows'] = $notes;
