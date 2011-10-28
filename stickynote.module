@@ -147,7 +147,7 @@ function stickynote_add_form($form, &$form_state, $stickynote) {
   $referring_url = !empty($stickynote->url) ? $stickynote->url : current_path();
   $form['notes_list'] = array(
     '#type' => 'markup',
-    '#prefix' => '<div id="notes-list">',
+    '#prefix' => '<div id="stickynote-list">',
     '#suffix' => '</div>',
     '#markup' => theme('stickynote_list', array('referring_url' => $referring_url)),
   );
@@ -163,7 +163,7 @@ function stickynote_add_form($form, &$form_state, $stickynote) {
     '#type' => 'submit',
     '#ajax' => array(
       'callback' => 'submit_note_add_callback',
-      'wrapper' => 'notes-list',
+      'wrapper' => 'stickynote-list',
       'name' => 'submit1',
     ),
     '#value' => t('Add Note'),
@@ -181,7 +181,7 @@ function stickynote_add_form($form, &$form_state, $stickynote) {
 function stickynote_edit_form($form, &$form_state, $stickynote) {
   $form['notes_list'] = array(
     '#type' => 'markup',
-    '#prefix' => '<div id="notes-list">',
+    '#prefix' => '<div id="stickynote-list">',
     '#suffix' => '</div>',
     '#markup' => theme('stickynote_list', array('referring_url' => $stickynote->url)),
   );
@@ -459,7 +459,7 @@ function theme_stickynote_list($variables) {
   $referring_url = $variables['referring_url'];
   $can_edit = user_access('edit stickynotes');
   $can_delete = user_access('delete stickynotes');
-// Use current path if there is no reffering url
+  // Use current path if there is no reffering url
   if (isset($referring_url)) {
     $path = $referring_url;
   }
@@ -467,7 +467,7 @@ function theme_stickynote_list($variables) {
     $path = current_path();
   }
 
-// Get all stickynotes of path and order by created date
+  // Get all stickynotes of path and order by created date
   $query = db_select('stickynote', 's')
           ->condition('url', $path)
           ->fields('s')
@@ -475,7 +475,7 @@ function theme_stickynote_list($variables) {
 
   $result = $query->execute();
 
-// build rows for list
+  // build rows for list
   foreach ($result as $key => $row) {
     $notes[$row->snid] = array(
       'data' => array(
