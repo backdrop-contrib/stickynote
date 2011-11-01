@@ -52,7 +52,7 @@ function stickynote_menu() {
 function stickynote_theme($existing, $type, $theme, $path) {
   return array (
     'stickynote_list' => array(
-      'variables' => array('referring_url' => NULL),
+      'variables' => array('referring_url' => NULL, 'notes' => NULL, 'can_edit' => FALSE, 'can_delete' => FALSE),
      ),
   );
 }
@@ -144,12 +144,16 @@ function stickynote_add_page() {
  * Implements hook_form().
  */
 function stickynote_add_form($form, &$form_state, $stickynote) {
-  $referring_url = !empty($stickynote->url) ? $stickynote->url : current_path();
+  $stickynote_vars['referring_url'] = !empty($stickynote->url) ? $stickynote->url : current_path();
+  $stickynote_vars['notes'] = stickynote_get_notes($stickynote_vars['referring_url']);
+  $stickynote_vars['can_edit'] = user_access('edit stickynotes');
+  $stickynote_vars['can_delete'] = user_access('delete stickynotes');
+  
   $form['notes_list'] = array(
     '#type' => 'markup',
     '#prefix' => '<div id="stickynote-list">',
     '#suffix' => '</div>',
-    '#markup' => theme('stickynote_list', array('referring_url' => $referring_url)),
+    '#markup' => theme('stickynote_list', $stickynote_vars),
   );
   // @TODO: Remove the add note fields if user does not have access to creating
   // notes
@@ -169,7 +173,7 @@ function stickynote_add_form($form, &$form_state, $stickynote) {
     '#value' => t('Add Note'),
   );
 
-  $form_state['referring_url'] = $referring_url;
+  $form_state['referring_url'] = $stickynote_vars['referring_url'];
   field_attach_form('stickynote', $stickynote, $form, $form_state);
 
   return $form;
@@ -179,11 +183,16 @@ function stickynote_add_form($form, &$form_state, $stickynote) {
  * Implements hook_form().
  */
 function stickynote_edit_form($form, &$form_state, $stickynote) {
+  $stickynote_vars['referring_url'] = !empty($stickynote->url) ? $stickynote->url : current_path();
+  $stickynote_vars['notes'] = stickynote_get_notes($stickynote_vars['referring_url']);
+  $stickynote_vars['can_edit'] = user_access('edit stickynotes');
+  $stickynote_vars['can_delete'] = user_access('delete stickynotes');
+  
   $form['notes_list'] = array(
     '#type' => 'markup',
     '#prefix' => '<div id="stickynote-list">',
     '#suffix' => '</div>',
-    '#markup' => theme('stickynote_list', array('referring_url' => $stickynote->url)),
+    '#markup' => theme('stickynote_list', $stickynote_vars),
   );
   $form['note'] = array(
     '#type' => 'textarea',
@@ -215,9 +224,14 @@ function stickynote_edit_form($form, &$form_state, $stickynote) {
  * Add submit callback
  */
 function submit_note_add_callback($form, $form_state) {
+  $stickynote_vars['referring_url'] = !empty($form_state['referring_url']) ? $form_state['referring_url'] : current_path();
+  $stickynote_vars['notes'] = stickynote_get_notes($stickynote_vars['referring_url']);
+  $stickynote_vars['can_edit'] = user_access('edit stickynotes');
+  $stickynote_vars['can_delete'] = user_access('delete stickynotes');
+  
   // update list with new data
   $element = $form['notes_list'];
-  $element['#markup'] = theme('stickynote_list', array('referring_url' => $form_state['referring_url']));
+  $element['#markup'] = theme('stickynote_list', $stickynote_vars);
   return $element;
 }
 
@@ -447,16 +461,10 @@ function stickynote_block_view($delta = '') {
 }
 
 /**
- * Get notes for referring_url/current url and
- * return as list including edit/delete etc...
- *
- * @param $variables -> contains $variables['referring_url']
- * 
- * @TODO: remove as much logic as possible out of theme function
- *        there should not be any db calls in theme function
+ * gets all notes and returns array of notes.
+ * @param type $referring_url 
  */
-function theme_stickynote_list($variables) {
-  $referring_url = $variables['referring_url'];
+function stickynote_get_notes($referring_url = NULL) {
   $can_edit = user_access('edit stickynotes');
   $can_delete = user_access('delete stickynotes');
   // Use current path if there is no reffering url
@@ -475,6 +483,8 @@ function theme_stickynote_list($variables) {
 
   $result = $query->execute();
 
+  $notes = array(); 
+  
   // build rows for list
   foreach ($result as $key => $row) {
     $notes[$row->snid] = array(
@@ -492,22 +502,38 @@ function theme_stickynote_list($variables) {
       unset($notes[$row->snid]['data']['delete']);
     }
   }
+  
+  return $notes;
+}
 
+
+/**
+ * Get notes for referring_url/current url and
+ * return as list including edit/delete etc...
+ *
+ * @param $variables -> contains:
+ *             $variables['referring_url'] = url for notes
+ *             $variables['notes'] = an array of all notes for referring url
+ *             $variables['can_edit'] = a flag with permission to edit
+ *             $variables['can_delete'] = a flag with permission to delete * 
+ * @TODO: Customize include better themeing for listing.
+ */
+function theme_stickynote_list($variables) {
   $output = '';
 
   $header = array();
   $header[] = t('Note');
-  if ($can_edit) {
+  if ($variables['can_edit']) {
     $header[] = t('Edit');
   }
-  if ($can_delete) {
+  if ($variables['can_delete']) {
     $header[] = t('Delete');
   }
   $header[] = t('Date');
 
-  if (isset($notes)) {
+  if (isset($variables['notes'])) {
     $table['header'] = $header;
-    $table['rows'] = $notes;
+    $table['rows'] = $variables['notes'];
 
     $output = theme('table', $table);
   }
