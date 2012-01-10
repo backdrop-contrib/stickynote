@@ -489,7 +489,7 @@ function stickynote_get_notes($referring_url = NULL) {
   foreach ($result as $key => $row) {
     $notes[$row->snid] = array(
       'data' => array(
-        'note' => nl2br($row->note),
+        'note' => filter_xss(nl2br($row->note)),
         'edit' => l(t('edit this note'), 'stickynote/' . $row->snid . '/edit', array('attributes' => array('class' => array('use-ajax')))),
         'delete' => l(t('delete this note'), 'stickynote/' . $row->snid . '/delete', array('attributes' => array('class' => array('use-ajax')))),
         'created' => format_date($row->created, 'short'),
