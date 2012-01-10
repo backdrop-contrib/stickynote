@@ -378,7 +378,8 @@ function stickynote_page_view($stickynote, $view_mode = 'full') {
   field_attach_prepare_view('stickynote', array($stickynote->snid => $stickynote), $view_mode);
   entity_prepare_view('stickynote', array($stickynote->snid => $stickynote));
   $stickynote->content += field_attach_view('stickynote', $stickynote, $view_mode);
-
+  $note = filter_xss(nl2br($stickynote->note));
+  
   // @todo This can't possibly be the correct way to output a base entity field
   $stickynote->content += array(
     'note' => array(
@@ -397,13 +398,13 @@ function stickynote_page_view($stickynote, $view_mode = 'full') {
       '#formatter' => 'text_default',
       '#items' => array(
         0 => array(
-          'value' => $stickynote->note,
+          'value' => $note,
           'format' => NULL,
-          'safe_value' => $stickynote->note,
+          'safe_value' => $note,
         ),
       ),
       0 => array(
-        '#markup' => $stickynote->note,
+        '#markup' => $note,
       ),
     )
   );
