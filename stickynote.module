@@ -36,6 +36,20 @@ function stickynote_menu() {
     'access arguments' => array('delete stickynotes'),
     'type' => MENU_CALLBACK,
   );
+  $items['stickynote/%stickynote/delete_confirm'] = array(
+    'title' => 'Delete Stickynote',
+    'page callback' => 'stickynote_delete_confirm',
+    'page arguments' => array(1),
+    'access arguments' => array('delete stickynotes'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['stickynote/%stickynote/cancel'] = array(
+    'title' => 'Cancel Delete Stickynote',
+    'page callback' => 'stickynote_cancel_delete',
+    'page arguments' => array(1),
+    'access arguments' => array('delete stickynotes'),
+    'type' => MENU_CALLBACK,
+  );
   $items['stickynote/%stickynote/edit'] = array(
     'title' => 'Edit Stickynote',
     'page callback' => 'stickynote_edit',
@@ -52,9 +66,13 @@ function stickynote_menu() {
 function stickynote_theme($existing, $type, $theme, $path) {
   return array (
     'stickynote_list' => array(
-      'variables' => array('referring_url' => NULL, 'notes' => NULL, 'can_edit' => FALSE, 'can_delete' => FALSE),
+      'variables' => array('referring_url' => NULL, 'notes' => NULL, 'can_edit' => FALSE, 'can_delete' => FALSE,),
       'file' => 'theme/stickynote.theme.inc',
       
+     ),
+    'stickynote_confirm' => array(
+      'variables' => array('stickynote' => NULL,),
+      'file' => 'theme/stickynote.theme.inc',
      ),
   );
 }
@@ -259,14 +277,31 @@ function stickynote_save(&$stickynote) {
  */
 function stickynote_delete($stickynote) {
   // delete stickynote record
+  if (!isset($_GET['token']) || !drupal_valid_token($_GET['token'], $stickynote->snid)) {
+      return drupal_access_denied();
+  }
   entity_get_controller('stickynote')->delete($stickynote);
   $commands = array();
   $output = '<div id="add-edit-form">' . drupal_render(drupal_get_form('stickynote_add_form', $stickynote)) . '</div>';
 
-  // replace div with new form/table
-  $commands[] = ajax_command_replace('#add-edit-form', $output);;
-  $page = array('#type' => 'ajax', '#commands' => $commands);
-  ajax_deliver($page);
+  stickynote_rebuild_notes('#add-edit-form', $output);
+}
+
+function stickynote_cancel_delete($stickynote) {
+  $output = '<div id="add-edit-form">' . drupal_render(drupal_get_form('stickynote_add_form', $stickynote)) . '</div>';
+
+  stickynote_rebuild_notes('#add-edit-form', $output);
+}
+
+/**
+ * Stickynote confirm delete callback
+ * @param $stickynote
+ */
+function stickynote_delete_confirm($stickynote) {
+  $commands = array();
+  $confirm_form = theme('stickynote_confirm', array('stickynote' => $stickynote));
+  
+  stickynote_rebuild_notes('.note-' . $stickynote->snid, $confirm_form);
 }
 
 /**
@@ -274,12 +309,16 @@ function stickynote_delete($stickynote) {
  * @param $stickynote
  */
 function stickynote_edit($stickynote) {
-  $commands = array();
-
   $output = '<div id="add-edit-form">' . drupal_render(drupal_get_form('stickynote_edit_form', $stickynote)) . '</div>';
+  
+  stickynote_rebuild_notes('#add-edit-form', $output);
+}
 
-  // replace div with new form/table
-  $commands[] = ajax_command_replace('#add-edit-form', $output);
+function stickynote_rebuild_notes($selector, $output) {
+  $commands = array();
+  
+    // replace div with new form/table
+  $commands[] = ajax_command_replace($selector, $output);
 
   $page = array('#type' => 'ajax', '#commands' => $commands);
   ajax_deliver($page);
@@ -484,17 +523,31 @@ function stickynote_get_notes($referring_url = NULL) {
 
   $result = $query->execute();
 
-  $notes = array(); 
+  $notes = array();
   
   // build rows for list
   foreach ($result as $key => $row) {
+    $note_class = 'note-' . $row->snid;
     $notes[$row->snid] = array(
       'data' => array(
-        'note' => filter_xss(nl2br($row->note)),
-        'edit' => l(t('edit this note'), 'stickynote/' . $row->snid . '/edit', array('attributes' => array('class' => array('use-ajax')))),
-        'delete' => l(t('delete this note'), 'stickynote/' . $row->snid . '/delete', array('attributes' => array('class' => array('use-ajax')))),
-        'created' => format_date($row->created, 'short'),
-      )
+        'note' => array(
+            'data' => filter_xss(nl2br($row->note)),
+            'class' => $note_class
+        ),
+        'edit' => array(
+            'data' => l(t('edit this note'), 'stickynote/' . $row->snid . '/edit', array('attributes' => array('class' => array('use-ajax')))),
+            'class' => $note_class,
+        ),
+        'delete' => array(
+            'data' => l(t('delete this note'), 'stickynote/' . $row->snid . '/delete_confirm', array('attributes' => array('class' => array('use-ajax')))),
+            'class' => $note_class,
+        ),
+        'created' => array(
+            'data' => format_date($row->created, 'short'),
+            'class' => $note_class,
+        ),
+      ),
+      'id' => 'note-' . $row->snid,
     );
     if (!$can_edit) {
       unset($notes[$row->snid]['data']['edit']);

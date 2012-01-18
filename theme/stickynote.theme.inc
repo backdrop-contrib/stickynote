@@ -33,3 +33,31 @@ function theme_stickynote_list($variables) {
 
   return $output;
 }
+
+/**
+ * Return confirmation links for deletion
+ *
+ * @param $stickynote
+ */
+function theme_stickynote_confirm($variables) {
+  $stickynote = $variables['stickynote'];
+  $token = drupal_get_token($stickynote->snid);
+  
+  $output = '';
+  $output .= '<td colspan="4" id="note-' . $stickynote->snid . '">';
+  $output .= '<div id="confirm-delete-' . $sitckynote->snid . '" style="text-align: center;">';
+  $output .= 'Are you sure?</br>';
+  $output .= l(t('Delete'), 'stickynote/' . $stickynote->snid . '/delete', array(
+    'attributes' => array('class' => array('use-ajax')),
+    'query' => array('token' => $token),
+  ));
+  $output .= '&nbsp;&nbsp;&nbsp;&nbsp;';
+  $output .= l(t('Cancel'), 'stickynote/' . $stickynote->snid . '/cancel', array('attributes' => array('class' => array('use-ajax'))));
+  $output .= '</div>';
+  
+  
+  $output .= '</td>';
+  
+
+  return $output;
+}
