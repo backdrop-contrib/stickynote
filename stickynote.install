@@ -19,9 +19,9 @@ function stickynote_schema() {
       ),
       'note' => array(
         'description' => 'The actual note',
-        'type' => 'varchar',
-        'length' => '255',
+        'type' => 'text',
         'not null' => TRUE,
+        'size' => 'big',
       ),
       'uid' => array(
         'description' => 'The user who wrote the note',
@@ -61,4 +61,18 @@ function stickynote_schema() {
  */
 function stickynote_install() {
   drupal_set_message(t('To add the stickynote block to your site, go to <a href="/admin/structure/block">admin/structure/block</a> and enable it in a region.'), 'status');
+}
+
+/**
+ * Implements hook_update_N().
+ * 
+ * Updates note column to be of type text. This allows for longer notes without errors.
+ */
+function stickynote_update_7000() {
+  db_change_field('stickynote', 'note', 'note',
+    array('type' => 'text', 'size' => 'big', 'not null' => TRUE));
+
+  return t('The note column was successfully changed into a larger column type.');
+
+  throw new DrupalUpdateException('Something went wrong. Please open a issue on Drupal.org.');
 }
