@@ -16,12 +16,8 @@ function theme_stickynote_list($variables) {
 
   $header = array();
   $header[] = t('Note');
-  if ($variables['can_edit']) {
     $header[] = t('Edit');
-  }
-  if ($variables['can_delete']) {
     $header[] = t('Delete');
-  }
   $header[] = t('Date');
 
   if (isset($variables['notes'])) {

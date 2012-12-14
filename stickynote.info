@@ -2,6 +2,7 @@
 name = Sticky Note
 description = "Adds ability to add sticky notes"
 core = 7.x
+configure = admin/config/stickynote
 files[] = stickynote.controller.inc
 files[] = includes/stickynote.admin.inc
 files[] = includes/stickynote.block.inc
