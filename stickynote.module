@@ -79,9 +79,9 @@ function stickynote_menu() {
 function stickynote_theme($existing, $type, $theme, $path) {
   return array (
     'stickynote_list' => array(
-      'variables' => array('referring_url' => NULL, 'notes' => NULL, 'can_edit' => FALSE, 'can_delete' => FALSE,),
+      'variables' => array('referring_url' => NULL, 'notes' => NULL,),
       'file' => 'theme/stickynote.theme.inc',
-      
+
      ),
     'stickynote_confirm' => array(
       'variables' => array('stickynote' => NULL,),
@@ -93,7 +93,7 @@ function stickynote_theme($existing, $type, $theme, $path) {
 function stickynote_views_api() {
   return array(
     'api' => 3,
-    'path' => drupal_get_path('module', 'stickynote') . '/includes/', 
+    'path' => drupal_get_path('module', 'stickynote') . '/includes/',
   );
 }
 
@@ -184,9 +184,7 @@ function stickynote_add_page() {
 function stickynote_add_form($form, &$form_state, $stickynote) {
   $stickynote_vars['referring_url'] = !empty($stickynote->url) ? $stickynote->url : current_path();
   $stickynote_vars['notes'] = stickynote_get_notes($stickynote_vars['referring_url']);
-  $stickynote_vars['can_edit'] = user_access('edit own stickynote');
-  $stickynote_vars['can_delete'] = user_access('delete own stickynote');
-  
+
   $form['notes_list'] = array(
     '#type' => 'markup',
     '#prefix' => '<div id="stickynote-list">',
@@ -201,7 +199,7 @@ function stickynote_add_form($form, &$form_state, $stickynote) {
   else {
     $access = TRUE;
   }
-  
+
   $form['note'] = array(
     '#type' => 'textarea',
     '#title' => t('Add Note'),
@@ -233,14 +231,14 @@ function stickynote_add_form($form, &$form_state, $stickynote) {
 function stickynote_edit_form($form, &$form_state, $stickynote) {
   $stickynote_vars['referring_url'] = !empty($stickynote->url) ? $stickynote->url : current_path();
   $stickynote_vars['notes'] = stickynote_get_notes($stickynote_vars['referring_url']);
-  
+
   $form['notes_list'] = array(
     '#type' => 'markup',
     '#prefix' => '<div id="stickynote-list">',
     '#suffix' => '</div>',
     '#markup' => theme('stickynote_list', $stickynote_vars),
   );
-  
+
   $form['note'] = array(
     '#type' => 'textarea',
     '#title' => t('Edit Note'),
@@ -282,7 +280,7 @@ function stickynote_edit_form($form, &$form_state, $stickynote) {
 function submit_note_add_callback($form, $form_state) {
   $stickynote_vars['referring_url'] = !empty($form_state['referring_url']) ? $form_state['referring_url'] : current_path();
   $stickynote_vars['notes'] = stickynote_get_notes($stickynote_vars['referring_url']);
-  
+
   // update list with new data
   $element = $form['notes_list'];
   $element['#markup'] = theme('stickynote_list', $stickynote_vars);
@@ -335,7 +333,7 @@ function stickynote_cancel_delete($stickynote) {
  */
 function stickynote_delete_confirm($stickynote) {
   $confirm_form = theme('stickynote_confirm', array('stickynote' => $stickynote));
-  
+
   stickynote_rebuild_notes('.note-' . $stickynote->snid, $confirm_form);
 }
 
@@ -345,13 +343,13 @@ function stickynote_delete_confirm($stickynote) {
  */
 function stickynote_edit($stickynote) {
   $output = '<div id="add-edit-form">' . drupal_render(drupal_get_form('stickynote_edit_form', $stickynote)) . '</div>';
-  
+
   stickynote_rebuild_notes('#add-edit-form', $output);
 }
 
 function stickynote_rebuild_notes($selector, $output) {
   $commands = array();
-  
+
     // replace div with new form/table
   $commands[] = ajax_command_replace($selector, $output);
 
@@ -439,7 +437,7 @@ function stickynote_edit_form_submit($form, &$form_state) {
 
 /**
  * Stickynote title callback
- * 
+ *
  * @param $stickynote
  */
 function stickynote_page_title($stickynote) {
@@ -448,7 +446,7 @@ function stickynote_page_title($stickynote) {
 
 /**
  * Builds stickynote page
- * 
+ *
  * @param $stickynote
  * @param $view_mode
  */
@@ -459,8 +457,8 @@ function stickynote_page_view($stickynote, $view_mode = 'full') {
   field_attach_prepare_view('stickynote', array($stickynote->snid => $stickynote), $view_mode);
   entity_prepare_view('stickynote', array($stickynote->snid => $stickynote));
   $stickynote->content += field_attach_view('stickynote', $stickynote, $view_mode);
-  $note = filter_xss(nl2br($stickynote->note));
-  
+  $note = nl2br(filter_xss($stickynote->note));
+
   // @todo This can't possibly be the correct way to output a base entity field
   $stickynote->content += array(
     'note' => array(
@@ -543,12 +541,12 @@ function stickynote_block_view($delta = '') {
 }
 
 /**
- * gets all notes and returns array of notes.
- * @param type $referring_url 
+ * Gets all notes and returns array of notes.
+ * @param type $referring_url
  */
 function stickynote_get_notes($referring_url = NULL) {
   global $user;
-  
+
   // Use current path if there is no referring url
   if (isset($referring_url)) {
     $path = $referring_url;
@@ -563,61 +561,21 @@ function stickynote_get_notes($referring_url = NULL) {
           ->fields('s')
           ->orderBy('created', 'DESC');
 
-  $result = $query->execute();
+  $notes = $query->execute();
 
-  $notes = array();
-  
-  // build rows for list
-  foreach ($result as $key => $stickynote) {
-    if (_stickynote_view_access($stickynote)) {
-      $note_class = 'note-' . $stickynote->snid;
-      $notes[$stickynote->snid] = array(
-        'data' => array(
-          'note' => array(
-              'data' => filter_xss(nl2br($stickynote->note)),
-              'class' => $note_class
-          ),
-          'edit' => array(
-              'data' => l(t('edit'), 'stickynote/' . $stickynote->snid . '/edit', array('attributes' => array('class' => array('use-ajax')))),
-              'class' => $note_class,
-          ),
-          'delete' => array(
-              'data' => l(t('delete'), 'stickynote/' . $stickynote->snid . '/delete_confirm', array('attributes' => array('class' => array('use-ajax')))),
-              'class' => $note_class,
-          ),
-          'created' => array(
-              'data' => format_date($stickynote->created, variable_get('stickynote_date_format', 'short')),
-              'class' => $note_class,
-          ),
-        ),
-        'id' => 'note-' . $stickynote->snid,
-      );
-    
-      // If user doesn't have access, don't show edit link.
-      if (!_stickynote_edit_access($stickynote)) {
-        $notes[$stickynote->snid]['data']['edit'] = NULL;
-      }
-      
-      // If user doesn't have access don't show delete link.
-      if (!_stickynote_delete_access($stickynote)) {
-        $notes[$stickynote->snid]['data']['delete'] = NULL;
-      }
-    }
-  }
-  
   return $notes;
 }
 
 /**
- * Helper function to check stickynote edit access 
+ * Helper function to check stickynote edit access
  */
 function _stickynote_edit_access($stickynote) {
   global $user;
-  
+
   $admin = user_access('administer stickynote');
   $can_edit = user_access('edit any stickynote');
-  $can_edit_own = user_access('edit own stickynote'); 
-  
+  $can_edit_own = user_access('edit own stickynote');
+
   if ($admin || $can_edit || ($can_edit_own && ($user->uid == $stickynote->uid))) {
     return TRUE;
   }
@@ -625,32 +583,32 @@ function _stickynote_edit_access($stickynote) {
 }
 
 /**
- * Helper function to check stickynote delete access 
+ * Helper function to check stickynote delete access
  */
 function _stickynote_delete_access($stickynote) {
   global $user;
-  
+
   $admin = user_access('administer stickynote');
   $can_delete = user_access('delete any stickynote');
-  $can_delete_own = user_access('delete own stickynote'); 
-  
+  $can_delete_own = user_access('delete own stickynote');
+
   if ($admin || $can_delete || ($can_delete_own && ($user->uid == $stickynote->uid))) {
     return TRUE;
   }
   return FALSE;
 }
 
- 
+
 /**
- * Helper function to check stickynote view access 
+ * Helper function to check stickynote view access
  */
 function _stickynote_view_access($stickynote) {
   global $user;
-  
+
   $admin = user_access('administer stickynote');
   $can_view = user_access('view any stickynote');
-  $can_view_own = user_access('view own stickynote'); 
-  
+  $can_view_own = user_access('view own stickynote');
+
   if ($admin || $can_view || ($can_view_own && ($user->uid == $stickynote->uid))) {
     return TRUE;
   }

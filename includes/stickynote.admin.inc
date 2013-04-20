@@ -6,8 +6,8 @@
 
 /**
  * Admin page callback function.
- * 
- * @return string 
+ *
+ * @return string
  */
 function stickynote_info() {
   $notes_per_page = 20;
@@ -75,11 +75,11 @@ function stickynote_info() {
 function stickynote_config() {
   $form = array();
   $date_formats = system_get_date_types();
-  
+
   foreach ($date_formats as $format) {
     $options[$format['type']] = $format['title'];
   }
-  
+
   $form['stickynote_date_format'] = array(
     '#type' => 'select',
     '#title' => t('Stickynote Date Format'),
@@ -87,6 +87,6 @@ function stickynote_config() {
     '#default_value' => variable_get('stickynote_date_format', 'short'),
     '#description' => t('Select a date format that will apply to stickynotes across the site.'),
   );
-  
+
   return system_settings_form($form);
 }
