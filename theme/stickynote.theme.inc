@@ -11,6 +11,7 @@
  */
 function theme_stickynote_list($variables) {
   $output = '';
+  $notes = array();
 
   $header = array();
   $header[] = t('Note');
