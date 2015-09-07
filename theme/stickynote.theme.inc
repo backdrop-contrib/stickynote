@@ -20,7 +20,7 @@ function theme_stickynote_list($variables) {
   $header[] = t('Delete');
   $header[] = t('Date');
 
-  if (isset($variables['notes'])) {
+  if (isset($variables['notes']) && count(intval($variables['notes']->rowCount())) {
     $table['header'] = $header;
 
     // build rows for list
