@@ -15,7 +15,7 @@ function stickynote_menu() {
     'access arguments' => array('administer stickynote'),
     'file' => 'includes/stickynote.admin.inc',
   );
-  $items['admin/config/stickynote'] = array(
+  $items['admin/config/content/stickynote'] = array(
     'title' => 'Stickynote',
     'description' => 'Configure stickynote options',
     'page callback' => 'drupal_get_form',
