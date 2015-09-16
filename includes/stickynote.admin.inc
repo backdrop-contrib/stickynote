@@ -49,7 +49,7 @@ function stickynote_info() {
     $notes[] = array(
       'data' => array(
         'snid' => l($row->snid, 'stickynote/' . $row->snid),
-        'note' => $row->note,
+        'note' => filter_xss($row->note),
         'url' => l($row->url, $row->url),
         'user' => $user_name,
         'created' => date('n/j/Y - G:i', $row->created),
