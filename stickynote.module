@@ -292,7 +292,8 @@ function submit_note_add_callback($form, $form_state) {
  */
 function submit_note_edit_callback($form, $form_state) {
   // repace add form with edit form
-  $commands[] = ajax_command_replace('#stickynote-edit-form', drupal_render(drupal_get_form('stickynote_add_form', $form_state['original_stickynote'])));
+  $original_stickynote = drupal_get_form('stickynote_add_form', $form_state['original_stickynote']);
+  $commands[] = ajax_command_replace('#stickynote-edit-form', drupal_render($original_stickynote));
   $page = array('#type' => 'ajax', '#commands' => $commands);
   return $page;
 }
@@ -342,7 +343,8 @@ function stickynote_delete_confirm($stickynote) {
  * @param $stickynote
  */
 function stickynote_edit($stickynote) {
-  $output = '<div id="add-edit-form">' . drupal_render(drupal_get_form('stickynote_edit_form', $stickynote)) . '</div>';
+  $render = drupal_get_form('stickynote_edit_form', $stickynote);
+  $output = '<div id="add-edit-form">' . drupal_render($render) . '</div>';
 
   stickynote_rebuild_notes('#add-edit-form', $output);
 }
@@ -559,7 +561,7 @@ function stickynote_get_notes($referring_url = NULL) {
   $query = db_select('stickynote', 's')
           ->condition('url', $path)
           ->fields('s')
-          ->orderBy('created', 'DESC');
+          ->orderBy('created', 'ASC');
 
   $notes = $query->execute();
 

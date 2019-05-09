@@ -28,6 +28,11 @@ function theme_stickynote_list($variables) {
       if (_stickynote_view_access($stickynote)) {
         $note_class = 'note-' . $stickynote->snid;
         $account = user_load($stickynote->uid);
+        if (!empty($account)) {
+         $user_name = l(t($account->name), 'user/' . $stickynote->uid);
+        } else {
+         $user_name = '';
+        }
         $notes[$stickynote->snid] = array(
           'data' => array(
             'note' => array(
@@ -35,7 +40,7 @@ function theme_stickynote_list($variables) {
               'class' => $note_class,
             ),
             'author' => array(
-              'data' => l(t($account->name), 'user/' . $stickynote->uid),
+              'data' => $user_name,
               'class' => $note_class,
             ),
             'edit' => array(

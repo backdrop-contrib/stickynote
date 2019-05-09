@@ -31,7 +31,7 @@ function stickynote_info() {
     array(
       'data' => 'Created',
       'field' => 's.created',
-      'sort' => 'desc',
+      'sort' => 'asc',
     ),
   );
   $query = db_select('stickynote', 's')->extend('PagerDefault')->extend('TableSort');
@@ -45,7 +45,11 @@ function stickynote_info() {
   $notes = array();
   foreach ($result as $key => $row) {
     $user = user_load($row->uid, FALSE);
-    $user_name = $user->uid == 0 ? 'Anon' :  l($user->name, 'user/' . $user->uid);
+    if (!empty($user)) {
+      $user_name = l($user->name, 'user/' . $user->uid);
+    } else {
+      $user_name = '';
+    }
     $notes[] = array(
       'data' => array(
         'snid' => l($row->snid, 'stickynote/' . $row->snid),
