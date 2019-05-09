@@ -13,7 +13,7 @@ function stickynote_info() {
   $notes_per_page = 20;
   $header = array(
     array(
-      'data' => 'snid',
+      'data' => 'ID',
       'field' => 's.snid',
     ),
     array(
@@ -50,15 +50,21 @@ function stickynote_info() {
     } else {
       $user_name = '';
     }
-    $notes[] = array(
-      'data' => array(
-        'snid' => l($row->snid, 'stickynote/' . $row->snid),
-        'note' => filter_xss($row->note),
-        'url' => l($row->url, $row->url),
-        'user' => $user_name,
-        'created' => date('n/j/Y - G:i', $row->created),
-      )
-    );
+    if (!drupal_valid_path($row->url)) {
+      db_delete('stickynote')
+        ->condition('snid', $row->snid)
+        ->execute();
+    } else {
+      $notes[] = array(
+        'data' => array(
+          'snid' => l($row->snid, 'stickynote/' . $row->snid),
+          'note' => filter_xss($row->note),
+          'url' => l($row->url, $row->url),
+          'user' => $user_name,
+          'created' => date('n/j/Y - G:i', $row->created),
+        )
+      );
+    }
   }
 
   $build['stickynotes_table'] = array(
