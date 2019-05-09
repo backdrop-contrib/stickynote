@@ -108,6 +108,7 @@ function stickynote_entity_info() {
     'load hook' => 'stickynote_load',
     'uri callback' => 'stickynote_uri',
     'fieldable' => TRUE,
+    'redirect' => FALSE,
     'entity keys' => array(
       'id' => 'snid',
       'label' => 'note',
