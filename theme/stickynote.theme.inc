@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * The stickynote.theme.inc file for the stickynote module
+ */
 
 /**
  * Get notes for referring_url/current url and
@@ -29,9 +33,10 @@ function theme_stickynote_list($variables) {
         $note_class = 'note-' . $stickynote->snid;
         $account = user_load($stickynote->uid);
         if (!empty($account)) {
-         $user_name = l(t($account->name), 'user/' . $stickynote->uid);
-        } else {
-         $user_name = '';
+          $user_name = l(t($account->name), 'user/' . $stickynote->uid);
+        }
+        else {
+          $user_name = '';
         }
         $notes[$stickynote->snid] = array(
           'data' => array(

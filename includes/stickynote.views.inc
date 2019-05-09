@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * The stickynote.views.inc file for the stickynote module
+ */
 
 /**
  * Implements hook_views_data().

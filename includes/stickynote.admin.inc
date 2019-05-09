@@ -47,14 +47,16 @@ function stickynote_info() {
     $user = user_load($row->uid, FALSE);
     if (!empty($user)) {
       $user_name = l($user->name, 'user/' . $user->uid);
-    } else {
+    }
+    else {
       $user_name = '';
     }
     if (!drupal_valid_path($row->url)) {
       db_delete('stickynote')
         ->condition('snid', $row->snid)
         ->execute();
-    } else {
+    }
+    else {
       $notes[] = array(
         'data' => array(
           'snid' => l($row->snid, 'stickynote/' . $row->snid),

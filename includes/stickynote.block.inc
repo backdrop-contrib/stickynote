@@ -5,8 +5,8 @@
  */
 
 /**
- * Return the stickynote block's add form 
- * @return string 
+ * Return the stickynote block's add form
+ * @return string
  */
 function stickynote_block_contents() {
   $output = '';

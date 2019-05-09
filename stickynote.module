@@ -21,7 +21,7 @@ function stickynote_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('stickynote_config'),
     'access arguments' => array('administer stickynote'),
-  	'type' => MENU_NORMAL_ITEM,
+    'type' => MENU_NORMAL_ITEM,
     'file' => 'includes/stickynote.admin.inc',
   );
   $items['stickynote/%stickynote'] = array(
@@ -44,7 +44,7 @@ function stickynote_menu() {
     'page arguments' => array(1),
     'access arguments' => array(1),
     'access callback' => '_stickynote_delete_access',
-  	'type' => MENU_CALLBACK,
+    'type' => MENU_CALLBACK,
   );
   $items['stickynote/%stickynote/delete_confirm'] = array(
     'title' => 'Delete Stickynote',
@@ -77,19 +77,20 @@ function stickynote_menu() {
  * Implements hook_theme().
  */
 function stickynote_theme($existing, $type, $theme, $path) {
-  return array (
+  return array(
     'stickynote_list' => array(
-      'variables' => array('referring_url' => NULL, 'notes' => NULL,),
+      'variables' => array('referring_url' => NULL, 'notes' => NULL),
       'file' => 'theme/stickynote.theme.inc',
-
-     ),
+    ),
     'stickynote_confirm' => array(
-      'variables' => array('stickynote' => NULL,),
+      'variables' => array('stickynote' => NULL),
       'file' => 'theme/stickynote.theme.inc',
-     ),
+    ),
   );
 }
-
+/**
+ * Implements hook_views_api().
+ */
 function stickynote_views_api() {
   return array(
     'api' => 3,
@@ -319,13 +320,15 @@ function stickynote_delete($stickynote) {
   entity_get_controller('stickynote')->delete($stickynote);
   $commands = array();
   $output = '<div id="add-edit-form">' . drupal_render(drupal_get_form('stickynote_add_form', $stickynote)) . '</div>';
-
   stickynote_rebuild_notes('#add-edit-form', $output);
 }
 
+/**
+ * Stickynote cancel delete callback
+ * @param $stickynote
+ */
 function stickynote_cancel_delete($stickynote) {
   $output = '<div id="add-edit-form">' . drupal_render(drupal_get_form('stickynote_add_form', $stickynote)) . '</div>';
-
   stickynote_rebuild_notes('#add-edit-form', $output);
 }
 
@@ -335,7 +338,6 @@ function stickynote_cancel_delete($stickynote) {
  */
 function stickynote_delete_confirm($stickynote) {
   $confirm_form = theme('stickynote_confirm', array('stickynote' => $stickynote));
-
   stickynote_rebuild_notes('.note-' . $stickynote->snid, $confirm_form);
 }
 
@@ -349,7 +351,10 @@ function stickynote_edit($stickynote) {
 
   stickynote_rebuild_notes('#add-edit-form', $output);
 }
-
+/**
+ * Stickynote rebuild notes callback
+ * @param $selector, $output
+ */
 function stickynote_rebuild_notes($selector, $output) {
   $commands = array();
 

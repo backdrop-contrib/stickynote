@@ -5,7 +5,13 @@
  * The controller class for the stickynote entity
  */
 
+ /**
+  * The controller class for the stickynote entity
+  */
 class StickynoteController extends DrupalDefaultEntityController {
+  /**
+   * public function save
+   */
   public function save($stickynote) {
     try {
       drupal_write_record('stickynote', $stickynote);
@@ -18,7 +24,9 @@ class StickynoteController extends DrupalDefaultEntityController {
       throw $e;
     }
   }
-
+  /**
+   * public function update
+   */
   public function update($stickynote) {
     try {
       db_update('stickynote')
@@ -37,7 +45,9 @@ class StickynoteController extends DrupalDefaultEntityController {
       throw $e;
     }
   }
-
+  /**
+   * public function delete
+   */
   public function delete($stickynote) {
     try {
       db_delete('stickynote')
