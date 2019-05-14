@@ -8,18 +8,18 @@
  * Implements hook_views_data().
  */
 function stickynote_views_data() {
-  $data['stickynote']['table']['group'] = t('Stickynote Table');
+  $data['stickynote']['table']['group'] = t('Sticky Notes table');
 
   $data['stickynote']['table']['base'] = array(
     'field' => 'snid',
-    'title' => t('Stickynote'),
-    'help' => t("Stickynote table contains stickynote content for given paths."),
+    'title' => t('Sticky Notes'),
+    'help' => t("Sticky Notes table contains sticky note content for given paths."),
     'weight' => -10,
   );
 
   $data['stickynote']['snid'] = array(
-    'title' => t('Stickynote ID'),
-    'help' => t('Stickynote ID'),
+    'title' => t('Sticky Note ID'),
+    'help' => t('Sticky Note ID'),
     'field' => array(
       'handler' => 'views_handler_field_numeric',
       'click sortable' => TRUE,
@@ -34,7 +34,7 @@ function stickynote_views_data() {
 
   $data['stickynote']['note'] = array(
     'title' => t('Note'),
-    'help' => t('Stickynote contents'),
+    'help' => t('Sticky Note contents'),
     'field' => array(
       'handler' => 'views_handler_field',
       'click sortable' => TRUE,
@@ -51,8 +51,8 @@ function stickynote_views_data() {
   );
 
   $data['stickynote']['uid'] = array(
-    'title' => t('Stickynote Author'),
-    'help' => t('Stickynote author'),
+    'title' => t('Sticky Note Author'),
+    'help' => t('Sticky Note author'),
     'field' => array(
       'handler' => 'views_handler_field_numeric',
       'click sortable' => TRUE,
@@ -67,7 +67,7 @@ function stickynote_views_data() {
 
   $data['stickynote']['url'] = array(
     'title' => t('URL'),
-    'help' => t('URL stickynote is saved on.'),
+    'help' => t('URL sticky note is saved on.'),
     'field' => array(
       'handler' => 'views_handler_field',
       'click sortable' => TRUE,

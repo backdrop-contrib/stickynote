@@ -18,6 +18,7 @@ function theme_stickynote_list($variables) {
   $notes = array();
 
   $header = array();
+  $header[] = t('ID');
   $header[] = t('Note');
   $header[] = t('Author');
   $header[] = t('Edit');
@@ -40,6 +41,10 @@ function theme_stickynote_list($variables) {
         }
         $notes[$stickynote->snid] = array(
           'data' => array(
+            'id' => array(
+              'data' => $stickynote->snid,
+              'class' => $note_class,
+            ),
             'note' => array(
               'data' => nl2br(filter_xss($stickynote->note)),
               'class' => $note_class,
@@ -61,7 +66,6 @@ function theme_stickynote_list($variables) {
               'class' => $note_class,
             ),
           ),
-          'id' => 'note-' . $stickynote->snid,
         );
 
         // If user doesn't have access, don't show edit link.
@@ -94,7 +98,7 @@ function theme_stickynote_confirm($variables) {
   $token = drupal_get_token($stickynote->snid);
 
   $output = '';
-  $output .= '<td colspan="5" id="note-' . $stickynote->snid . '">';
+  $output .= '<td colspan="6" id="note-' . $stickynote->snid . '">';
   $output .= '<div id="confirm-delete-' . $sitckynote->snid . '" style="text-align: center;">';
   $output .= 'Are you sure?</br>';
   $output .= l(t('Delete'), 'stickynote/' . $stickynote->snid . '/delete', array(

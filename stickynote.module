@@ -9,18 +9,18 @@
  */
 function stickynote_menu() {
   $items['admin/structure/stickynote/manage'] = array(
-    'title' => 'Stickynote',
-    'description' => 'Manage stickynote structure',
+    'title' => 'Sticky Note',
+    'description' => 'Manage sticky note structure',
     'page callback' => 'stickynote_info',
-    'access arguments' => array('administer stickynote'),
+    'access arguments' => array('administer sticky note'),
     'file' => 'includes/stickynote.admin.inc',
   );
   $items['admin/config/content/stickynote'] = array(
-    'title' => 'Stickynote',
-    'description' => 'Configure stickynote options',
+    'title' => 'Sticky Note',
+    'description' => 'Configure sticky note options',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('stickynote_config'),
-    'access arguments' => array('administer stickynote'),
+    'access arguments' => array('administer sticky note'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'includes/stickynote.admin.inc',
   );
@@ -29,17 +29,17 @@ function stickynote_menu() {
     'title arguments' => array(1),
     'page callback' => 'stickynote_page_view',
     'page arguments' => array(1),
-    'access arguments' => array('view any stickynote'),
+    'access arguments' => array('view any sticky note'),
     'type' => MENU_CALLBACK,
   );
   $items['stickynote/add'] = array(
-    'title' => 'Add Stickynote',
+    'title' => 'Add Sticky Note',
     'page callback' => 'stickynote_add_page',
-    'access arguments' => array('create stickynote'),
+    'access arguments' => array('create sticky note'),
     'type' => MENU_CALLBACK,
   );
   $items['stickynote/%stickynote/delete'] = array(
-    'title' => 'Delete Stickynote',
+    'title' => 'Delete Sticky Note',
     'page callback' => 'stickynote_delete',
     'page arguments' => array(1),
     'access arguments' => array(1),
@@ -47,7 +47,7 @@ function stickynote_menu() {
     'type' => MENU_CALLBACK,
   );
   $items['stickynote/%stickynote/delete_confirm'] = array(
-    'title' => 'Delete Stickynote',
+    'title' => 'Delete Sticky Note',
     'page callback' => 'stickynote_delete_confirm',
     'page arguments' => array(1),
     'access arguments' => array(1),
@@ -55,7 +55,7 @@ function stickynote_menu() {
     'type' => MENU_CALLBACK,
   );
   $items['stickynote/%stickynote/cancel'] = array(
-    'title' => 'Cancel Delete Stickynote',
+    'title' => 'Cancel Delete Sticky Note',
     'page callback' => 'stickynote_cancel_delete',
     'page arguments' => array(1),
     'access arguments' => array(1),
@@ -63,7 +63,7 @@ function stickynote_menu() {
     'type' => MENU_CALLBACK,
   );
   $items['stickynote/%stickynote/edit'] = array(
-    'title' => 'Edit Stickynote',
+    'title' => 'Edit Sticky Note',
     'page callback' => 'stickynote_edit',
     'page arguments' => array(1),
     'access arguments' => array(1),
@@ -103,7 +103,7 @@ function stickynote_views_api() {
  */
 function stickynote_entity_info() {
   $stickynote_info['stickynote'] = array(
-    'label' => t('Stickynote'),
+    'label' => t('Sticky note'),
     'controller class' => 'StickynoteController',
     'base table' => 'stickynote',
     'load hook' => 'stickynote_load',
@@ -117,16 +117,16 @@ function stickynote_entity_info() {
     'static cache' => TRUE,
     'bundles' => array(
       'stickynote' => array(
-        'label' => 'Stickynote',
+        'label' => 'Sticky note',
         'admin' => array(
           'path' => 'admin/structure/stickynote/manage',
-          'access arguments' => array('administer stickynote'),
+          'access arguments' => array('administer sticky note'),
         ),
       ),
     ),
     'view modes' => array(
       'full' => array(
-        'label' => t('Full Stickynote'),
+        'label' => t('Full Sticky note'),
         'custom settings' =>  FALSE,
       ),
     )
@@ -159,7 +159,7 @@ function stickynote_load($snid = NULL, $reset = FALSE) {
 }
 
 /**
- * Helper function. Loads multiple stickynotes.
+ * Helper function. Loads multiple sticky notes.
  */
 function stickynote_load_multiple($snids = array(), $conditions = array(), $reset = FALSE) {
   return entity_load('stickynote', $snids, $conditions, $reset);
@@ -540,7 +540,7 @@ function stickynote_block_view($delta = '') {
     case 'stickynote_block':
       if (user_access('view any stickynote') || user_access('view own stickynote') || user_access('administer stickynote')) {
         module_load_include('inc', 'stickynote', 'includes/stickynote.block');
-        $block['subject'] = t('Stickynotes');
+        $block['subject'] = t('Sticky Notes');
         $block['content'] = stickynote_block_contents();
       }
       break;
@@ -554,6 +554,7 @@ function stickynote_block_view($delta = '') {
  */
 function stickynote_get_notes($referring_url = NULL) {
   global $user;
+  $sort = variable_get('stickynote_sort', 'desc');
 
   // Use current path if there is no referring url
   if (isset($referring_url)) {
@@ -563,11 +564,11 @@ function stickynote_get_notes($referring_url = NULL) {
     $path = current_path();
   }
 
-  // Get all stickynotes of path and order by created date
+  // Get all sticky notes of path and order by created date
   $query = db_select('stickynote', 's')
           ->condition('url', $path)
           ->fields('s')
-          ->orderBy('created', 'ASC');
+          ->orderBy('created', $sort);
 
   $notes = $query->execute();
 

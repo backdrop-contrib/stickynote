@@ -1,18 +1,28 @@
 /**
  *  @file
- *  README for the Stickynote Module.
+ *  README for the Sticky Note Module.
  */
 
-This module simply creates a block with the ability to add, delete, and edit notes.
-Notes are stored on a per page basis can be made visible to certain roles like any
-other block. All of the notes, sitewide, can be viewed from the Manage page at 
-admin/structure/stickynote/manage. Configuration options can be changed at
-admin/config/stickynote.
+Introduction
+------------
+This module is meant to be a utility module for everybody working with Drupal
+websites: developers, admins, editors to communicate with one another about
+their content or keep a todo list on ANY page (not only nodes!), thus the name
+Sticky Note.
 
-How to:
-Enabling this module will create a block that can be placed in a region on your site. 
-1) Go to admin/structure/block and enable the block in a region
-2) Add whatever role/path etc. settings (like any other block).
-3) The block is now ready to be used.
+How it works
+------------
+This module creates a block with the ability to add, delete, and edit notes.
+Sticky Notes are stored on a per path basis and the block can be made visible to
+certain roles/paths etc. like any other block.
+It is best to place the Sticky Note block in the website's footer area.
 
-Go to /admin/structure/stickynote/manage to see a list of all stickynotes
+
+Managing the sticky notes
+-------------------------
+All of the notes, site-wide, can be viewed from the manage page at
+/admin/structure/stickynote/manage.
+
+Configuration
+-------------
+Basic configuration is available at /admin/config/content/stickynote.

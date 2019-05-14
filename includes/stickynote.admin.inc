@@ -11,6 +11,7 @@
  */
 function stickynote_info() {
   $notes_per_page = 20;
+  $sort = variable_get('stickynote_sort', 'desc');
   $header = array(
     array(
       'data' => 'ID',
@@ -31,7 +32,7 @@ function stickynote_info() {
     array(
       'data' => 'Created',
       'field' => 's.created',
-      'sort' => 'asc',
+      'sort' => $sort,
     ),
   );
   $query = db_select('stickynote', 's')->extend('PagerDefault')->extend('TableSort');
@@ -73,8 +74,8 @@ function stickynote_info() {
     '#theme' => 'table',
     '#header' => $header,
     '#rows' => $notes,
-    '#prefix' => t('This table lists all existing stickynotes and their respective data.'),
-    '#empty' => t('There are currently no stickynotes.')
+    '#prefix' => t('This table lists all existing sticky notes and their respective data.'),
+    '#empty' => t('There are currently no sticky notes.')
   );
   $build['stickynotes_pager'] = array('#theme' => 'pager');
 
@@ -94,10 +95,21 @@ function stickynote_config() {
 
   $form['stickynote_date_format'] = array(
     '#type' => 'select',
-    '#title' => t('Stickynote Date Format'),
+    '#title' => t('Date Format'),
     '#options' => $options,
     '#default_value' => variable_get('stickynote_date_format', 'short'),
-    '#description' => t('Select a date format that will apply to stickynotes across the site.'),
+    '#description' => t('Select a date format for sticky notes.')
+  );
+
+  $form['stickynote_sort'] = array(
+    '#type' => 'select',
+    '#title' => t('Order'),
+    '#options' => array(
+      'asc' => 'Ascending',
+      'desc' => 'Descending'
+    ),
+    '#default_value' => variable_get('stickynote_sort', 'desc'),
+    '#description' => t('Select sorting criteria for sticky note entries.')
   );
 
   return system_settings_form($form);

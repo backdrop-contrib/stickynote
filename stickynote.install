@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Install, update and uninstall functions for the stickynote module.
+ * Install, update and uninstall functions for the sticky note module.
  */
 
 /**
@@ -9,10 +9,10 @@
  */
 function stickynote_schema() {
   $schema['stickynote'] = array(
-    'description' => 'The table that holds stickynotes',
+    'description' => 'The table that holds sticky notes',
     'fields' => array(
       'snid' => array(
-        'description' => 'Primary key for our table of stickynotes',
+        'description' => 'Primary key for our table of sticky notes',
         'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
@@ -60,7 +60,7 @@ function stickynote_schema() {
  * Implements hook_install().
  */
 function stickynote_install() {
-  drupal_set_message(st('To add the stickynote block to your site, go to <a href="/admin/structure/block">admin/structure/block</a> and enable it in a region.'), 'status');
+  drupal_set_message(st('To add the sticky note block to your site, go to <a href="/admin/structure/block">admin/structure/block</a> and enable it in a region.'), 'status');
 }
 
 /**
