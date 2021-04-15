@@ -5,16 +5,16 @@
  * The controller class for the stickynote entity
  */
 
- /**
-  * The controller class for the stickynote entity
-  */
-class StickynoteController extends DrupalDefaultEntityController {
+/**
+ * The controller class for the stickynote entity
+ */
+class StickynoteController extends DefaultEntityController {
   /**
    * public function save
    */
   public function save($stickynote) {
     try {
-      drupal_write_record('stickynote', $stickynote);
+      backdrop_write_record('stickynote', $stickynote);
       field_attach_insert('stickynote', $stickynote);
       module_invoke_all('entity_insert', $stickynote, 'stickynote');
       return $stickynote;

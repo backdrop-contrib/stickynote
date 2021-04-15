@@ -11,7 +11,7 @@
 function stickynote_block_contents() {
   $output = '';
 
-  $stickynote = (object)array (
+  $stickynote = (object) array(
     'snid' => '',
     'type' => 'stickynote',
     'note' => '',
@@ -19,7 +19,7 @@ function stickynote_block_contents() {
     'uid' => '',
   );
 
-  $form = drupal_get_form('stickynote_add_form', $stickynote);
-  $output .= '<div id="add-edit-form">' . drupal_render($form) . '</div>';
+  $form = backdrop_get_form('stickynote_add_form', $stickynote);
+  $output .= '<div id="add-edit-form">' . backdrop_render($form) . '</div>';
   return $output;
 }

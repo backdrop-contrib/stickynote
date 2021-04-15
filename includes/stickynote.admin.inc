@@ -11,7 +11,7 @@
  */
 function stickynote_info() {
   $notes_per_page = 20;
-  $sort = variable_get('stickynote_sort', 'desc');
+  $sort = config_get('stickynote.settings', 'stickynote_sort');
   $header = array(
     array(
       'data' => 'ID',
@@ -52,7 +52,7 @@ function stickynote_info() {
     else {
       $user_name = '';
     }
-    if (!drupal_valid_path($row->url)) {
+    if (!backdrop_valid_path($row->url)) {
       db_delete('stickynote')
         ->condition('snid', $row->snid)
         ->execute();
@@ -65,7 +65,7 @@ function stickynote_info() {
           'url' => l($row->url, $row->url),
           'user' => $user_name,
           'created' => date('n/j/Y - G:i', $row->created),
-        )
+        ),
       );
     }
   }
@@ -75,7 +75,7 @@ function stickynote_info() {
     '#header' => $header,
     '#rows' => $notes,
     '#prefix' => t('This table lists all existing sticky notes and their respective data.'),
-    '#empty' => t('There are currently no sticky notes.')
+    '#empty' => t('There are currently no sticky notes.'),
   );
   $build['stickynotes_pager'] = array('#theme' => 'pager');
 
@@ -86,19 +86,22 @@ function stickynote_info() {
  * Stickynote configuration options
  */
 function stickynote_config() {
+  $config = config('stickynote.settings');
   $form = array();
-  $date_formats = system_get_date_types();
+  $form['#config'] = 'stickynote.settings';
 
-  foreach ($date_formats as $format) {
-    $options[$format['type']] = $format['title'];
+  // Gets the list of defined date formats and attributes.
+  $date_types = system_get_date_formats();
+  foreach ($date_types as $machine_name => $value) {
+    $options[$machine_name] = check_plain(t('@name format', array('@name' => $value['label'])) . ': ' . format_date(REQUEST_TIME, $machine_name));
   }
 
   $form['stickynote_date_format'] = array(
     '#type' => 'select',
     '#title' => t('Date Format'),
     '#options' => $options,
-    '#default_value' => variable_get('stickynote_date_format', 'short'),
-    '#description' => t('Select a date format for sticky notes.')
+    '#default_value' => $config->get('stickynote_date_format'),
+    '#description' => t('Select a date format for sticky notes.'),
   );
 
   $form['stickynote_sort'] = array(
@@ -106,10 +109,10 @@ function stickynote_config() {
     '#title' => t('Order'),
     '#options' => array(
       'asc' => 'Ascending',
-      'desc' => 'Descending'
+      'desc' => 'Descending',
     ),
-    '#default_value' => variable_get('stickynote_sort', 'desc'),
-    '#description' => t('Select sorting criteria for sticky note entries.')
+    '#default_value' => $config->get('stickynote_sort'),
+    '#description' => t('Select sorting criteria for sticky note entries.'),
   );
 
   return system_settings_form($form);

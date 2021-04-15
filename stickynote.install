@@ -60,19 +60,29 @@ function stickynote_schema() {
  * Implements hook_install().
  */
 function stickynote_install() {
-  drupal_set_message(st('To add the sticky note block to your site, go to <a href="/admin/structure/block">admin/structure/block</a> and enable it in a region.'), 'status');
+  backdrop_set_message(st('To add the sticky note block to your site, go to <a href="/admin/structure/block">admin/structure/block</a> and enable it in a region.'), 'status');
+  // Dynamically generated variable data was detected on the following lines.
+}
+
+// TODO The old hook_update_N functions cannot be applied to Backdrop.
+function stickynote_update_7000() { }
+
+/**
+ * Implements hook_update_last_removed().
+ */
+function stickynote_update_last_removed() {
+  return 7000;
 }
 
 /**
  * Implements hook_update_N().
- *
- * Updates note column to be of type text. This allows for longer notes without errors.
  */
-function stickynote_update_7000() {
-  db_change_field('stickynote', 'note', 'note',
-    array('type' => 'text', 'size' => 'big', 'not null' => TRUE));
+function stickynote_update_1000() {
+  $config = config('stickynote.settings');
+  $config->set('stickynote_sort', update_variable_get('stickynote_sort', 'desc'));
+  $config->set('stickynote_date_format', update_variable_get('stickynote_date_format', 'short'));
+  $config->save();
 
-  return t('The note column was successfully changed into a larger column type.');
-
-  throw new DrupalUpdateException('Something went wrong. Please open a issue on Drupal.org.');
+  update_variable_del('stickynote_sort');
+  update_variable_del('stickynote_date_format');
 }

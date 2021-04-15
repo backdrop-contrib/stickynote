@@ -59,10 +59,10 @@ function theme_stickynote_list($variables) {
             ),
             'delete' => array(
               'data' => l(t('delete'), 'stickynote/' . $stickynote->snid . '/delete_confirm', array('attributes' => array('class' => array('use-ajax')))),
-              'class' => $note_class,
+              'class' => $note_class . ' delete',
             ),
             'created' => array(
-              'data' => format_date($stickynote->created, variable_get('stickynote_date_format', 'short')),
+              'data' => format_date($stickynote->created, config_get('stickynote.settings', 'stickynote_date_format')),
               'class' => $note_class,
             ),
           ),
@@ -95,11 +95,11 @@ function theme_stickynote_list($variables) {
  */
 function theme_stickynote_confirm($variables) {
   $stickynote = $variables['stickynote'];
-  $token = drupal_get_token($stickynote->snid);
+  $token = backdrop_get_token($stickynote->snid);
 
   $output = '';
-  $output .= '<td colspan="6" id="note-' . $stickynote->snid . '">';
-  $output .= '<div id="confirm-delete-' . $sitckynote->snid . '" style="text-align: center;">';
+  $output .= '<td id="note-' . $stickynote->snid . '">';
+  $output .= '<div id="confirm-delete-' . $stickynote->snid . '" style="text-align: center;">';
   $output .= 'Are you sure?</br>';
   $output .= l(t('Delete'), 'stickynote/' . $stickynote->snid . '/delete', array(
     'attributes' => array('class' => array('use-ajax')),
