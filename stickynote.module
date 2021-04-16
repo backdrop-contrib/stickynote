@@ -32,6 +32,12 @@ function stickynote_menu() {
     'access arguments' => array('view any sticky note'),
     'type' => MENU_CALLBACK,
   );
+  $items['stickynote/add'] = array(
+    'title' => 'Add Sticky Note',
+    'page callback' => 'stickynote_add_page',
+    'access arguments' => array('create sticky note'),
+    'type' => MENU_CALLBACK,
+  );
   $items['stickynote/%stickynote/delete'] = array(
     'title' => 'Delete Sticky Note',
     'page callback' => 'stickynote_delete',
@@ -162,21 +168,6 @@ function stickynote_load_multiple($snids = array(), $conditions = array(), $rese
 }
 
 /**
- * Stickynote add page callback function.
- */
-function stickynote_add_page() {
-  $stickynote = (object) array(
-    'snid' => '',
-    'type' => 'stickynote',
-    'note' => '',
-    'url' => current_path(),
-    'uid' => '',
-  );
-
-  return backdrop_get_form('stickynote_add_form', $stickynote);
-}
-
-/**
  * Implements hook_form().
  */
 function stickynote_add_form($form, &$form_state, $stickynote) {
@@ -216,10 +207,8 @@ function stickynote_add_form($form, &$form_state, $stickynote) {
     '#value' => t('Add Note'),
   );
 
-
   $form_state['referring_url'] = $stickynote_vars['referring_url'];
   field_attach_form('stickynote', $stickynote, $form, $form_state);
-
   return $form;
 }
 
@@ -266,9 +255,7 @@ function stickynote_edit_form($form, &$form_state, $stickynote) {
   // Save the referring url and the original stickynote
   $form_state['referring_url'] = $stickynote->url;
   $form_state['original_stickynote'] = $stickynote;
-
   field_attach_form('stickynote', $stickynote, $form, $form_state);
-
   return $form;
 }
 
@@ -412,7 +399,6 @@ function stickynote_add_form_validate($form, &$form_state) {
  */
 function stickynote_add_form_submit($form, &$form_state) {
   global $user;
-
   // set variables and save submission
   $stickynote_submission = (object) $form_state['values'];
   $stickynote_submission->created = time();
@@ -439,9 +425,7 @@ function stickynote_edit_form_submit($form, &$form_state) {
   $stickynote_submission = (object) $form_state['original_stickynote'];
   $stickynote_submission->note = $form_state['values']['note'];
   $stickynote_submission->updated = time();
-
   field_attach_submit('stickynote', $stickynote_submission, $form, $form_state);
-
   $stickynote = entity_get_controller('stickynote')->update($stickynote_submission);
 }
 
