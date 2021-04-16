@@ -400,7 +400,7 @@ function stickynote_add_form_validate($form, &$form_state) {
 function stickynote_add_form_submit($form, &$form_state) {
   global $user;
   // set variables and save submission
-  $stickynote_submission = (object) $form_state['values'];
+  $stickynote_submission = new StickynoteClass($form_state['values']);
   $stickynote_submission->created = time();
   $stickynote_submission->updated = time();
   $stickynote_submission->url = $form_state['referring_url'];
