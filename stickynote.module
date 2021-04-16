@@ -4,39 +4,6 @@
  * The main module file for the stickynote module
  */
 
- /**
-  * Stickynote extends Entity.
-  *
-  */
- class Stickynote extends Entity {
-
-   /**
-    * Implements EntityInterface::id().
-    */
-   public function id() {}
-
-   /**
-    * Implements EntityInterface::entityType().
-    */
-   public function entityType() {}
-
-   /**
-    * Implements EntityInterface::bundle().
-    */
-   public function bundle() {}
-
-   /**
-    * Implements EntityInterface::label().
-    */
-   public function label() {}
-
-   /**
-    * Implements EntityInterface::uri().
-    */
-   public function uri() {}
- }
-
-
 /**
  * Implements hook_menu().
  */
@@ -138,7 +105,7 @@ function stickynote_views_api() {
 function stickynote_entity_info() {
   $stickynote_info['stickynote'] = array(
     'label' => t('Sticky note'),
-    'entity class' => 'Stickynote',
+    'entity class' => 'StickynoteClass',
     'controller class' => 'StickynoteController',
     'base table' => 'stickynote',
     'load hook' => 'stickynote_load',
@@ -681,6 +648,7 @@ function _stickynote_view_access($stickynote) {
  */
 function stickynote_autoload_info() {
   return array(
-    'StickynoteController' => 'stickynote.controller.inc',
+    'StickynoteClass' => 'includes/stickynote.class.inc',
+    'StickynoteController' => 'includes/stickynote.controller.inc',
   );
 }

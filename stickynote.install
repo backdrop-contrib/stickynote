@@ -60,18 +60,8 @@ function stickynote_schema() {
  * Implements hook_install().
  */
 function stickynote_install() {
-  backdrop_set_message(st('To add the sticky note block to your site, go to <a href="/admin/structure/block">admin/structure/block</a> and enable it in a region.'), 'status');
+  backdrop_set_message(st('To add the sticky note block to your site, go to <a href="/admin/structure/layouts">admin/structure/layouts</a> and enable it in a region.'), 'status');
   // Dynamically generated variable data was detected on the following lines.
-}
-
-// TODO The old hook_update_N functions cannot be applied to Backdrop.
-function stickynote_update_7000() { }
-
-/**
- * Implements hook_update_last_removed().
- */
-function stickynote_update_last_removed() {
-  return 7000;
 }
 
 /**
