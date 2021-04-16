@@ -45,7 +45,7 @@ Credits
 
 - Ported to Backdrop CMS by [Alan Mels](https://github.com/alanmels).
 - Originally created for Drupal by @infiniteluke [Luke Herrington](https://github.com/infiniteluke).
-- Maintained for Drupal 7 by AltaGrade](https://www.altagrade.com)
+- Maintained for Drupal 7 by [AltaGrade](https://www.altagrade.com)
 - Sponsored by [AltaGrade](https://www.altagrade.com)
 
 License
