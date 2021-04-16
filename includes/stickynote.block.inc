@@ -9,17 +9,6 @@
  * @return string
  */
 function stickynote_block_contents() {
-  $output = '';
-
-  $stickynote = (object) array(
-    'snid' => '',
-    'type' => 'stickynote',
-    'note' => '',
-    'url' => '',
-    'uid' => '',
-  );
-
-  $form = backdrop_get_form('stickynote_add_form', $stickynote);
-  $output .= '<div id="add-edit-form">' . backdrop_render($form) . '</div>';
-  return $output;
+  $form = backdrop_get_form('stickynote_add_form', '');
+  return '<div id="add-edit-form">' . backdrop_render($form) . '</div>';
 }

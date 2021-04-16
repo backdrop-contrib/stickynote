@@ -96,7 +96,6 @@ function theme_stickynote_list($variables) {
 function theme_stickynote_confirm($variables) {
   $stickynote = $variables['stickynote'];
   $token = backdrop_get_token($stickynote->snid);
-
   $output = '';
   $output .= '<td id="note-' . $stickynote->snid . '">';
   $output .= '<div id="confirm-delete-' . $stickynote->snid . '" style="text-align: center;">';
@@ -108,10 +107,6 @@ function theme_stickynote_confirm($variables) {
   $output .= '&nbsp;&nbsp;&nbsp;&nbsp;';
   $output .= l(t('Cancel'), 'stickynote/' . $stickynote->snid . '/cancel', array('attributes' => array('class' => array('use-ajax'))));
   $output .= '</div>';
-
-
   $output .= '</td>';
-
-
   return $output;
 }
