@@ -32,12 +32,6 @@ function stickynote_menu() {
     'access arguments' => array('view any sticky note'),
     'type' => MENU_CALLBACK,
   );
-  $items['stickynote/add'] = array(
-    'title' => 'Add Sticky Note',
-    'page callback' => 'stickynote_add_page',
-    'access arguments' => array('create sticky note'),
-    'type' => MENU_CALLBACK,
-  );
   $items['stickynote/%stickynote/delete'] = array(
     'title' => 'Delete Sticky Note',
     'page callback' => 'stickynote_delete',
