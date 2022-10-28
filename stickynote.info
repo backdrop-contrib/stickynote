@@ -3,4 +3,4 @@ description = "Adds ability to add sticky notes"
 backdrop = 1.x
 type = module
 stylesheets[all][] = css/stickynote.css
-configure = admin/config/stickynote
+configure = admin/config/content/stickynote
