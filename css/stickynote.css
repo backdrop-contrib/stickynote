@@ -1,6 +1,6 @@
 .block-stickynote ul.links {
   list-style-type: none;
 }
-tr {
+.sticky-table tr {
   background: inherit !important;
 }
